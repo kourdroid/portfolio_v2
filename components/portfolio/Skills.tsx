@@ -22,6 +22,74 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 
+// Animation variants
+const sectionFadeIn = {
+  initial: { opacity: 0 },
+  animate: { 
+    opacity: 1,
+    transition: { 
+      duration: 0.6,
+      staggerChildren: 0.1 
+    }
+  }
+};
+
+const categoryVariants = {
+  initial: { opacity: 0, y: 30 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1]
+    }
+  }
+};
+
+const skillCardVariants = {
+  initial: { opacity: 0, y: 20, scale: 0.95 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { 
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  },
+  hover: { 
+    y: -5, 
+    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+    transition: { 
+      duration: 0.2,
+      ease: "easeOut"
+    }
+  }
+};
+
+const iconAnimation = {
+  initial: { scale: 0.8, rotate: -10, opacity: 0.5 },
+  animate: { 
+    scale: 1, 
+    rotate: 0, 
+    opacity: 1,
+    transition: { 
+      type: "spring",
+      stiffness: 200,
+      damping: 10
+    }
+  },
+  hover: { 
+    scale: 1.2, 
+    rotate: 5,
+    transition: { 
+      type: "spring",
+      stiffness: 300,
+      damping: 10
+    }
+  }
+};
+
 // Define your skills with proficiency levels and icons
 const skills = [
   { 
@@ -170,33 +238,11 @@ const skills = [
   },
 ];
 
-// Animation variants
-const sectionFadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-};
-
-const categoryVariants = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, ease: "easeOut" },
-};
-
-const skillCardVariants = {
-  initial: { opacity: 0, scale: 0.9 },
-  animate: { opacity: 1, scale: 1 },
-  hover: { 
-    y: -5, 
-    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
-    transition: { duration: 0.2 }
-  }
-};
-
 export function Skills() {
   // State for animated progress bars
   const [progressValues, setProgressValues] = useState<Record<string, number>>({});
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [isInView, setIsInView] = useState(false);
 
   // Group skills by category
   const skillsByCategory = skills.reduce((acc, skill) => {
@@ -219,15 +265,17 @@ export function Skills() {
     
     // Animate progress bars after a short delay
     const timer = setTimeout(() => {
-      const finalValues: Record<string, number> = {};
-      skills.forEach(skill => {
-        finalValues[skill.name] = skill.proficiency;
-      });
-      setProgressValues(finalValues);
+      if (isInView) {
+        const finalValues: Record<string, number> = {};
+        skills.forEach(skill => {
+          finalValues[skill.name] = skill.proficiency;
+        });
+        setProgressValues(finalValues);
+      }
     }, 500);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [isInView]);
 
   // Function to get proficiency level text
   const getProficiencyLevel = (proficiency: number) => {
@@ -251,23 +299,57 @@ export function Skills() {
     <TooltipProvider>
       <motion.section
         id="skills"
-        className="container py-12 md:py-20"
+        className="container py-12 md:py-20 relative overflow-hidden"
         variants={sectionFadeIn}
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.1 }}
+        onViewportEnter={() => setIsInView(true)}
       >
-        <div className="flex flex-col items-start gap-4 mb-12">
+        {/* Background decorative elements */}
+        <motion.div 
+          className="absolute top-40 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl z-0"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.6 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        />
+        <motion.div 
+          className="absolute bottom-40 -left-20 w-48 h-48 rounded-full bg-secondary/5 blur-3xl z-0"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.5 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        />
+
+        <motion.div 
+          className="flex flex-col items-start gap-4 mb-12 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="mb-2"
+          >
+            <Badge variant="outline" className="px-3 py-1 backdrop-blur-sm bg-background/80">
+              My Expertise
+            </Badge>
+          </motion.div>
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Skills & Expertise</h2>
           <p className="text-muted-foreground md:text-xl/relaxed max-w-2xl">
             My technical toolkit and proficiency levels across various technologies and disciplines.
           </p>
-        </div>
+        </motion.div>
 
         {Object.entries(skillsByCategory).map(([category, categorySkills], categoryIndex) => (
           <motion.div
             key={category}
-            className="mb-16"
+            className="mb-16 relative z-10"
             variants={categoryVariants}
             initial="initial"
             whileInView="animate"
@@ -275,10 +357,25 @@ export function Skills() {
             transition={{ delay: categoryIndex * 0.1 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <h3 className="text-2xl font-bold pb-2">{category}</h3>
-              <Badge variant="outline" className="text-xs font-normal">
-                {categorySkills.length} {categorySkills.length === 1 ? 'skill' : 'skills'}
-              </Badge>
+              <motion.h3 
+                className="text-2xl font-bold pb-2"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
+              >
+                {category}
+              </motion.h3>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: categoryIndex * 0.1 + 0.2 }}
+              >
+                <Badge variant="outline" className="text-xs font-normal">
+                  {categorySkills.length} {categorySkills.length === 1 ? 'skill' : 'skills'}
+                </Badge>
+              </motion.div>
             </div>
             
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -306,9 +403,13 @@ export function Skills() {
                     }`}>
                       <CardContent className="p-6">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className={`flex items-center justify-center h-12 w-12 rounded-lg text-white ${skill.color}`}>
+                          <motion.div 
+                            className={`flex items-center justify-center h-12 w-12 rounded-lg text-white ${skill.color}`}
+                            variants={iconAnimation}
+                            whileHover="hover"
+                          >
                             <Icon className="h-6 w-6" />
-                          </div>
+                          </motion.div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
                               <h4 className="font-medium text-base">{skill.name}</h4>
@@ -364,7 +465,7 @@ export function Skills() {
             </div>
           </motion.div>
         ))}
-        
+
         <Separator className="my-12" />
       </motion.section>
     </TooltipProvider>
