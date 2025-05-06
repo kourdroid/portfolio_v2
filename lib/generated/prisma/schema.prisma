@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Portfolio Content Models ---
+
+model Project {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String
+  imageUrl    String? // Optional: URL to project image
+  projectUrl  String? // Optional: URL to live project
+  repoUrl     String? // Optional: URL to project repository
+  tags        String[] // Array of strings for technologies or categories
+  isFeatured  Boolean  @default(false)
+}
+
+model SkillCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  skills    Skill[]
+}
+
+model Skill {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  name        String
+  proficiency Int // e.g., 0-100
+  icon        String? // Name of the icon (e.g., 'FaReact', 'SiNextdotjs') or path
+  description String?
+  categoryId  String
+  category    SkillCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([name, categoryId]) // Ensure skill names are unique within a category
+}
+
+model FAQItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  question  String
+  answer    String
+  isOpen    Boolean  @default(false) // For accordion state on frontend, if needed
+  order     Int? // Optional: for ordering FAQs
+}
+
+// --- Admin User Model (for dashboard access) ---
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String // Hashed password
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

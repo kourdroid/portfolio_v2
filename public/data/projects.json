@@ -1,0 +1,31 @@
+{
+  "projects": [
+    {
+      "title": "Animax",
+      "description": "A MyAnimeList clone developed using Next.js.",
+      "longDescription": "This project demonstrates handling API integrations, managing state effectively, and constructing responsive user interfaces using Next.js and modern frontend techniques.",
+      "techStack": ["Next.js", "React", "TailwindCSS", "API Integration"],
+      "imageUrl": "/projects/Animax Project.png",
+      "liveUrl": "https://pro-animax.vercel.app",
+      "repoUrl": "https://github.com/kourdroid/Animax"
+    },
+    {
+      "title": "ToonStream",
+      "description": "A cartoon streaming platform using the Django framework.",
+      "longDescription": "This project highlights backend development skills, including database management, user authentication, and serving dynamic content with the Django framework and Python.",
+      "techStack": ["Django", "Python", "HTML", "CSS", "JavaScript", "Database Management"],
+      "imageUrl": "/projects/toonStream image.jpg",
+      "liveUrl": "",
+      "repoUrl": "https://github.com/kourdroid/ToonStream"
+    },
+    {
+      "title": "FITUC Theatre Festival Application System",
+      "description": "A web application for managing theatre festival applications and participant registration.",
+      "longDescription": "FITUC (Festival International du Théâtre Universitaire de Casablanca) is an annual international theatre festival hosted by the Faculty of Letters and Human Sciences Ben M'sik in Casablanca, Morocco. This web application streamlines the application process for theatre troupes interested in participating in the festival. It replaces a manual process where applicants had to download Word documents, fill them out, and email them back. The system features a multi-step application process, user authentication, application management, PDF generation, and a comprehensive admin dashboard for festival organizers.",
+      "techStack": ["Laravel", "PHP", "Tailwind CSS", "Alpine.js", "MySQL", "Blade Templates"],
+      "imageUrl": "/projects/fituc.jpg",
+      "liveUrl": "",
+      "repoUrl": "https://github.com/kourdroid/FITUC"
+    }
+  ]
+}
